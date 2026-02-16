@@ -1,103 +1,70 @@
+// Fig. 12.3: fig12_03.c
+// Inserting and deleting nodes in a list
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "ll.h"
 
-void instructions(void)
-{
-    puts("Enter your choice:\n"
-         "1 to insert an element into the list.\n"
-         "2 to delete an element from the list.\n"
-         "3 to end.");
-}
+int main( void )
+{ 
+   LLPtr startPtr = NULL; // initially there are no nodes
+   unsigned int choice; // user's choice ไม่มีค่าติดลบ
+   int item; // char entered by user
+   char name[50];
 
-int isEmpty(LLPtr sPtr)
-{
-    return sPtr == NULL;
-}
+   instructions(); // display the menu
+   printf( "%s", "? " );
+   scanf( "%u", &choice );
 
-/* insert sorted by id */
-void insert(LLPtr *sPtr, int id, const char *name)
-{
-    LLPtr newPtr = malloc(sizeof(LLnode));
-    LLPtr cur = *sPtr;
-    LLPtr prev = NULL;
+   // loop while user does not choose 3
+   while ( choice != 3 ) { 
 
-    newPtr->id = id;
-    strcpy(newPtr->name, name);
-    newPtr->nextPtr = NULL;
-    newPtr->prevPtr = NULL;
+      switch ( choice ) { 
+         case 1:
+            printf( "%s", "Enter id and name: " );
+            scanf("%d %s", &item, name);
+            insert( &startPtr, item , name); // insert item in list
+            printList( startPtr );
+            printListR( startPtr );
+            break;
+         case 2: // delete an element
+            // if list is not empty
+            if ( !isEmpty( startPtr ) ) { 
+               printf( "%s", "Enter number to be deleted: " );
+               scanf( "%d", &item );
 
-    while (cur != NULL && id > cur->id) {
-        prev = cur;
-        cur = cur->nextPtr;
-    }
+              
+               if ( deletes( &startPtr, item ) ) { 
+                  printf( "%d deleted.\n", item );
+                  printList( startPtr );
+                  printListR( startPtr );
+               } 
+               else {
+                  printf( "%d not found.\n\n", item );
+               } 
+            } 
+            else {
+               puts( "List is empty.\n" );
+            } 
 
-    if (prev == NULL) {                
-        newPtr->nextPtr = *sPtr;
-        if (*sPtr != NULL)
-            (*sPtr)->prevPtr = newPtr;
-        *sPtr = newPtr;
-    } else {                            
-        newPtr->nextPtr = cur;
-        newPtr->prevPtr = prev;
-        prev->nextPtr = newPtr;
-        if (cur != NULL)
-            cur->prevPtr = newPtr;
-    }
-}
+            break;
+         default:
+            puts( "Invalid choice.\n" );
+            instructions();
+            break;
+      } 
 
-int deletes(LLPtr *sPtr, int id)
-{
-    LLPtr cur = *sPtr;
+      printf( "%s", "? " );
+      scanf( "%u", &choice );
+   } 
 
-    while (cur != NULL && cur->id != id)
-        cur = cur->nextPtr;
+   puts("Clear all nodes");
 
-    if (cur == NULL)
-        return 0;
-
-    if (cur->prevPtr != NULL)
-        cur->prevPtr->nextPtr = cur->nextPtr;
-    else
-        *sPtr = cur->nextPtr;
-
-    if (cur->nextPtr != NULL)
-        cur->nextPtr->prevPtr = cur->prevPtr;
-
-    free(cur);
-    return 1;
-}
-
-void printList(LLPtr cur)
-{
-    LLPtr tail = NULL;
-
-    puts("The list is:");
-
-    while (cur != NULL) {
-        printf("%d %s --> ", cur->id, cur->name);
-        tail = cur;
-        cur = cur->nextPtr;
-    }
-    puts("NULL");
-
-    while (tail != NULL) {
-        printf("%d %s --> ", tail->id, tail->name);
-        tail = tail->prevPtr;
-    }
-    puts("NULL");
-}
-
-void clearList(LLPtr *sPtr)
-{
-    LLPtr temp;
-
-    puts("Clear all nodes");
-    while (*sPtr != NULL) {
-        temp = *sPtr;
-        printf("delete %d\n", temp->id);
-        *sPtr = (*sPtr)->nextPtr;
-        free(temp);
-    }
-}
+   LLPtr tempPtr;
+   while ( startPtr != NULL ) { 
+      printf("delete %d\n",startPtr->data);
+      deletes( &startPtr, startPtr->data );
+   }
+   
+   puts("End of run.");
+} 
