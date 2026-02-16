@@ -7,7 +7,7 @@ struct Node {
 }; // end structure listNode
 
 typedef struct Node LLnode; // synonym for struct listNode
-typedef LLnode LLPtr; // synonym for ListNode
+typedef LLnode *LLPtr; // synonym for ListNode
 
 // prototypes
 
